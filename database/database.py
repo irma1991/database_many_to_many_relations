@@ -54,6 +54,9 @@ def create_publishers_table():
     finally:
         close_connection(connection, cursor)
 
+create_books_table()
+create_publishers_table()
+
 
 def query_database(query, params = None):
     try:
@@ -64,9 +67,6 @@ def query_database(query, params = None):
         else:
             for row in cursor.execute(query):
                 print(row)
-
-        data = cursor.fetchall()
-        print(data)
 
     except sqlite3.DataError as error:
         print(error)
@@ -82,13 +82,12 @@ def create_book(book):
 
 book1 = book(None, "Pavadinimas", "Autorius", 2015, "Leidejas", 12)
 
-create_book(book1)
+# create_book(book1)
 
 
 def get_book(book):
     query = """SELECT * FROM books"""
     query_database(query)
-
 
 get_book(book1)
 
@@ -100,7 +99,7 @@ def update_book(book):
     query_database(query, params)
 
 
-update_book(book1)
+# update_book(book1)
 
 
 def delete_book(book):
@@ -120,15 +119,14 @@ def create_publisher(publisher):
 
 publisher1 = publisher(None, "Leidejo vardas", "Knygos pavadinimas", "Autorius", 2000, 6)
 
-create_publisher(publisher1)
+# create_publisher(publisher1)
 
 
 def get_publisher(publisher):
     query = """SELECT * FROM publishers"""
     query_database(query)
 
-
-get_publisher(publisher1)
+# get_publisher(publisher1)
 
 
 def update_publisher(publisher):
@@ -138,7 +136,7 @@ def update_publisher(publisher):
     query_database(query, params)
 
 
-update_publisher(publisher1)
+# update_publisher(publisher1)
 
 
 def delete_publisher(publisher):
@@ -179,3 +177,12 @@ def insert_junction(book, publisher):
 
 
 insert_junction(book1.book_title, publisher1.publisher_name)
+
+def get_junction():
+    query = """SELECT * FROM junction JOIN book ON junction.first_id = book.book_id 
+    JOIN publishers ON junction.second_id = publisher.publisher_id"""
+
+    query_database(query)
+
+
+get_junction()
