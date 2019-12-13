@@ -37,7 +37,7 @@ def create_books_table():
 def create_publishers_table():
     try:
         connection, cursor = open_connection()
-        query = """CREATE TABLE IF NOT EXISTS books (
+        query = """CREATE TABLE IF NOT EXISTS publishers (
                         publisher_id INTEGER PRIMARY KEY AUTOINCREMENT,
                         publisher_name TEXT UNIQUE,
                         book_title TEXT,
@@ -53,10 +53,6 @@ def create_publishers_table():
 
     finally:
         close_connection(connection, cursor)
-
-create_books_table()
-create_publishers_table()
-
 
 def query_database(query, params = None):
     try:
@@ -80,16 +76,9 @@ def create_book(book):
     query_database(query, params)
 
 
-book1 = book(None, "Pavadinimas", "Autorius", 2015, "Leidejas", 12)
-
-# create_book(book1)
-
-
 def get_book(book):
     query = """SELECT * FROM books"""
     query_database(query)
-
-get_book(book1)
 
 
 def update_book(book):
@@ -99,9 +88,6 @@ def update_book(book):
     query_database(query, params)
 
 
-# update_book(book1)
-
-
 def delete_book(book):
     query = """DELETE FROM books
     WHERE book_id = (?) OR book_title = (?) OR author = (?) OR publish_date = (?) OR publisher = (?) OR selling_price = (?)"""
@@ -109,24 +95,15 @@ def delete_book(book):
     query_database(query, params)
 
 
-# delete_book(book1)
-
 def create_publisher(publisher):
-    query = """INSERT INTO books VALUES (? ,?, ?, ?, ?, ?)"""
+    query = """INSERT INTO publishers VALUES (? ,?, ?, ?, ?, ?)"""
     params = (publisher.publisher_id, publisher.publisher_name, publisher.book_title, publisher.author, publisher.printed_quantity, publisher.printing_price)
     query_database(query, params)
-
-
-publisher1 = publisher(None, "Leidejo vardas", "Knygos pavadinimas", "Autorius", 2000, 6)
-
-# create_publisher(publisher1)
 
 
 def get_publisher(publisher):
     query = """SELECT * FROM publishers"""
     query_database(query)
-
-# get_publisher(publisher1)
 
 
 def update_publisher(publisher):
@@ -136,17 +113,11 @@ def update_publisher(publisher):
     query_database(query, params)
 
 
-# update_publisher(publisher1)
-
-
 def delete_publisher(publisher):
     query = """DELETE FROM publishers
     WHERE publisher_id = (?) OR publisher_name = (?) OR book_title = (?) OR author = (?) OR printed_quantity = (?) OR printing_price = (?)"""
     params = (publisher.publisher_id, publisher.publisher_name, publisher.book_title, publisher.author, publisher.printed_quantity, publisher.printing_price)
     query_database(query, params)
-
-
-# delete_publisher(publisher1)
 
 def create_junction_table():
     try:
@@ -166,23 +137,36 @@ def create_junction_table():
     finally:
         connection.close()
 
-create_junction_table()
-
 def insert_junction(book, publisher):
-    insert_table_junction_query = """INSERT INTO junction (first_id, second_id)
+    insert_junction_table_query = """INSERT INTO junction (first_id, second_id)
                                         SELECT(SELECT book_id FROM books WHERE book_title=(?)), 
-                                        (SELECT publisher_id FROM publishers WHERE publisher_name=?)"""
-    param = (book, publisher)
-    query_database(insert_table_junction_query, param)
+                                        (SELECT publisher_id FROM publishers WHERE publisher_name=(?))"""
+    param = (book.book_title, publisher.publisher_name)
+    query_database(insert_junction_table_query, param)
 
-
-insert_junction(book1.book_title, publisher1.publisher_name)
 
 def get_junction():
-    query = """SELECT * FROM junction JOIN book ON junction.first_id = book.book_id 
-    JOIN publishers ON junction.second_id = publisher.publisher_id"""
+    query = """SELECT * FROM junction JOIN books ON junction.first_id = books.book_id 
+    JOIN publishers ON junction.second_id = publishers.publisher_id"""
+
+    query1 = "SELECT * FROM junction"
 
     query_database(query)
 
+book1 = book(None, "Pavadinimas", "Autorius", 2015, "Leidejas", 12)
+publisher1 = publisher(None, "Leidejo vardas", "Knygos pavadinimas", "Autorius", 2000, 6)
 
+
+create_books_table()
+create_publishers_table()
+# create_book(book1)
+# create_publisher(publisher1)
+get_book(book1)
+get_publisher(publisher1)
+# update_book(book1)
+# update_publisher(publisher1)
+# delete_book(book1)
+# delete_publisher(publisher1)
+create_junction_table()
+insert_junction(book1, publisher1)
 get_junction()
